@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/publisher-java-http/publisher-java-http.iml" filepath="$PROJECT_DIR$/publisher-java-http/publisher-java-http.iml" />
+      <module fileurl="file://$PROJECT_DIR$/publisher-java-rabbit/publisher-java-rabbit.iml" filepath="$PROJECT_DIR$/publisher-java-rabbit/publisher-java-rabbit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/subscriber-node-http/subscriber-node-http.iml" filepath="$PROJECT_DIR$/subscriber-node-http/subscriber-node-http.iml" />
+      <module fileurl="file://$PROJECT_DIR$/subscriber-node-rabbit/subscriber-node-rabbit.iml" filepath="$PROJECT_DIR$/subscriber-node-rabbit/subscriber-node-rabbit.iml" />
+    </modules>
+  </component>
+</project>
