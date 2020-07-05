@@ -1,6 +1,5 @@
-FROM java:8-jdk-alpine
-COPY ./out/artifacts/publisher_java_http/publisher-java-http.jar /usr/app/
-WORKDIR /usr/app
+FROM openjdk:8-jre-alpine
+COPY target/publisher-java-http-1.0-SNAPSHOT.jar /usr/local/lib/amqp-publisher.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "publisher-java-http.jar"]
-#  "docker.for.mac.localhost:2022/endpoint", "docker.for.mac.localhost:2023/endpoint"
+ENTRYPOINT ["java","-jar","/usr/local/lib/amqp-publisher.jar"]
+

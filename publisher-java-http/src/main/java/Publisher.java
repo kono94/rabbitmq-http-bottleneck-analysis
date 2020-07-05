@@ -10,14 +10,18 @@ public class Publisher {
     private ExecutorService executorService;
     private BlockingQueue<Runnable> workerQueue;
     private int received = 0;
-    private final int toSendConst = 5000;
-    private int toSend = toSendConst;
+    private final int toSendConst;
+    private int toSend;
     private long startTime;
-    private final long dataInterval = 2;
+    private final long dataInterval;
     private int idCounting = 1;
     private String job[] = new String[]{"Programmer", "Volunteer", "Technical Writer", "Lawyer", "Librarian"};
 
     public Publisher(String[] serviceURLs) throws MalformedURLException {
+        toSendConst = Integer.parseInt(System.getenv("MESSAGE_COUNT"));
+        toSend = toSendConst;
+        dataInterval = Integer.parseInt(System.getenv("MESSAGE_DELAY"));
+        System.out.printf("MESSAGE_COUNT: %d \t MESSAGE_DELAY: %d \n", toSendConst, dataInterval);
         workerQueue = new LinkedBlockingQueue<>();
         executorService = new ThreadPoolExecutor(100, 100, 4000, TimeUnit.MILLISECONDS, workerQueue);
         servicesURLs = new URL[serviceURLs.length];

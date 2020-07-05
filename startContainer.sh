@@ -5,13 +5,19 @@ NC="\033[0m" # No Color
 echo "${RED} ############# STARTING INSTANCES ###########"
 docker rm -f subscriber-node-http-{1..10}
 docker rm -f publisher-java-http
+docker rm -f subscriber-node-rabbit-{1..10}
+docker rm -f publisher-java-rabbit
 cd subscriber-node-http
 
-NR_OF_INSTANCES=3
+NR_OF_INSTANCES=1
+MESSAGE_COUNT=5000
+MESSAGE_DELAY=2
+HOST="docker.for.mac.localhost"
 START_PARAMETERS=""
+
 for i in $(seq 1 $NR_OF_INSTANCES)
   do
-    START_PARAMETERS="${START_PARAMETERS} docker.for.mac.localhost:202${i}/endpoint"
+    START_PARAMETERS="${START_PARAMETERS} ${HOST}:202${i}/endpoint"
     echo "${CYAN} Instanciating node http subscriber instance ${i} ${NC}"
     INST=${i}
     PORT=202${INST}
@@ -24,4 +30,4 @@ sleep 5
 cd ../publisher-java-http
 echo "${CYAN} Starting java http publisher ${NC}"
 docker build -t publisher-java-http .
-docker run --name publisher-java-http --cpus=0.2 -it publisher-java-http "$START_PARAMETERS"
+docker run --name publisher-java-http --cpus=0.2 -e MESSAGE_COUNT=${MESSAGE_COUNT} -e MESSAGE_DELAY=${MESSAGE_DELAY} -it publisher-java-http "$START_PARAMETERS"

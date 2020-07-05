@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="publisher-java-http:jar">
-    <output-path>$PROJECT_DIR$/publisher-java-http/out/artifacts/publisher_java_http</output-path>
-    <root id="archive" name="publisher-java-http.jar">
-      <element id="module-output" name="publisher-java-http" />
-    </root>
-  </artifact>
-</component>

@@ -16,13 +16,17 @@ public class Publisher {
     private static final String EXCHANGE_NAME = "job_service";
     private static final String TOPIC_NAME = "message.sent";
     private ConnectionFactory factory;
-    private final int toSendConst = 5000;
+    private final int toSendConst;
     private long startTime;
-    private final long dataInterval = 0;
+    private final long dataInterval;
     private int idCounting = 1;
     private String job[] = new String[]{"Programmer", "Volunteer", "Technical Writer", "Lawyer", "Librarian"};
 
     Publisher(String[] args) {
+        toSendConst = Integer.parseInt(System.getenv("MESSAGE_COUNT"));
+        dataInterval = Integer.parseInt(System.getenv("MESSAGE_DELAY"));
+        System.out.printf("MESSAGE_COUNT: %d \t MESSAGE_DELAY: %d", toSendConst, dataInterval);
+
         factory = new ConnectionFactory();
         factory.setHost(args[0]);
         factory.setUsername(args[1]);
