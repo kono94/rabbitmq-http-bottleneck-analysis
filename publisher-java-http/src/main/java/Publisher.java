@@ -3,6 +3,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.NumberFormat;
 import java.util.concurrent.*;
 
 public class Publisher {
@@ -21,7 +22,7 @@ public class Publisher {
         toSendConst = Integer.parseInt(System.getenv("MESSAGE_COUNT"));
         toSend = toSendConst;
         dataInterval = Integer.parseInt(System.getenv("MESSAGE_DELAY"));
-        System.out.printf("MESSAGE_COUNT: %d \t MESSAGE_DELAY: %d \n", toSendConst, dataInterval);
+        //System.out.printf("MESSAGE_COUNT: %d \t MESSAGE_DELAY: %d \n", toSendConst, dataInterval);
         workerQueue = new LinkedBlockingQueue<>();
         executorService = new ThreadPoolExecutor(100, 100, 4000, TimeUnit.MILLISECONDS, workerQueue);
         servicesURLs = new URL[serviceURLs.length];
@@ -44,7 +45,7 @@ public class Publisher {
         startTime = System.currentTimeMillis();
         while(toSend > 0) {
             executorService.submit(buildJob(generateData(), servicesURLs[toSend % servicesURLs.length], toSendConst - toSend));
-            System.out.println("ToSend: " + toSend + "\t Queue size: " + workerQueue.size());
+            //System.out.println("ToSend: " + toSend + "\t Queue size: " + workerQueue.size());
             try {
                 Thread.sleep(dataInterval);
             } catch (InterruptedException e) {
@@ -59,6 +60,7 @@ public class Publisher {
     }
 
     public Runnable buildJob(String workLoad, URL url, int sendID) {
+        long requestTime = System.currentTimeMillis();
         return () -> {
             try {
                 HttpURLConnection con = null;
@@ -69,7 +71,6 @@ public class Publisher {
                 con.setRequestProperty("Content-Type", "application/json");
                 con.setRequestProperty("Accept", "application/json");
                 con.setDoOutput(true);
-
 
                 try(OutputStream os = con.getOutputStream()) {
                     byte[] input = workLoad.getBytes(StandardCharsets.UTF_8);
@@ -86,13 +87,14 @@ public class Publisher {
                     }
                     received++;
                     //System.out.printf("Got HTTP-Response! sendID: %d, Response-code: %s, message: %s, from: %s, received: %d", sendID, con.getResponseCode(), response.toString(),url, received);
-                    System.out.println("received:" + received);
-                    if(received > toSendConst - 100)
+                    System.out.printf("received: %d queue-size: %d time elapsed: %.2fs \r", received, workerQueue.size(), (System.currentTimeMillis() - requestTime) / 1000f);
+                    if(received > toSendConst - 10)
                         System.out.println("Time needed: " + ((System.currentTimeMillis() - startTime) / 1000));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         };
+
     }
 }

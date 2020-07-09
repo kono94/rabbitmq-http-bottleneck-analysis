@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 
 public class Publisher {
@@ -42,9 +43,11 @@ public class Publisher {
     }
 
     public void start() throws IOException, InterruptedException, TimeoutException {
+        AtomicInteger received = new AtomicInteger();
         ConcurrentNavigableMap<Long, String> outstandingConfirms = new ConcurrentSkipListMap<>();
 
         ConfirmCallback cleanOutstandingConfirms = (sequenceNumber, multiple) -> {
+            System.out.printf("received: %d queue-size: %d \r", received.getAndIncrement(), outstandingConfirms.size());
             if(multiple) {
                 ConcurrentNavigableMap<Long, String> confirmed = outstandingConfirms.headMap(
                         sequenceNumber, true
@@ -74,13 +77,15 @@ public class Publisher {
             System.out.println(channel.isOpen());
 
             for(int i = 0; i < toSendConst; ++i) {
-                channel.basicPublish(EXCHANGE_NAME, TOPIC_NAME, null, generateData().getBytes(StandardCharsets.UTF_8));
+                String body = generateData();
+                outstandingConfirms.put(channel.getNextPublishSeqNo(), body);
+                channel.basicPublish(EXCHANGE_NAME, TOPIC_NAME, null, body.getBytes(StandardCharsets.UTF_8));
                 try {
                     Thread.sleep(dataInterval);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("ToSend: " + (toSendConst - i));
+                //System.out.println("ToSend: " + (toSendConst - i));
             }
 
             if(!waitUntil(Duration.ofSeconds(60), outstandingConfirms::isEmpty)) {

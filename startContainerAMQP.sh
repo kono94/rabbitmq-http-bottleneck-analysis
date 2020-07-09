@@ -1,4 +1,7 @@
 #!/bin/zsh
+# Get to this file location
+cd "${0%/*}"
+
 RED="\033[0;31m"
 CYAN="\033[0;36m"
 NC="\033[0m" # No Color
@@ -9,12 +12,12 @@ docker rm -f subscriber-node-http-{1..10}
 docker rm -f publisher-java-http
 cd subscriber-node-rabbit
 
-NR_OF_INSTANCES=1
+NR_OF_INSTANCES=3
 RABBIT_HOST="docker.for.mac.localhost"
 RABBIT_USER="admin"
 RABBIT_PW="admin"
-MESSAGE_COUNT=5000
-MESSAGE_DELAY=2
+MESSAGE_COUNT=10000
+MESSAGE_DELAY=1
 START_PARAMETERS="$RABBIT_HOST $RABBIT_USER $RABBIT_PW"
 
 for i in $(seq 1 $NR_OF_INSTANCES)
